@@ -1,0 +1,38 @@
+[
+  {"section":"Preliminaries","code":"A1","description":"General items, attendance, temporary works","unit":"item","formula":"Item"},
+
+  {"section":"Groundworks","code":"B1","description":"Site clearance","unit":"m²","formula":"Area = Length × Width"},
+  {"section":"Groundworks","code":"B2","description":"Excavation to reduce levels","unit":"m³","formula":"Volume = Length × Width × Depth"},
+  {"section":"Groundworks","code":"B3","description":"Trench excavation","unit":"m³","formula":"Volume = Length × Width × Depth"},
+  {"section":"Groundworks","code":"B4","description":"Backfilling and compaction","unit":"m³","formula":"Volume = Length × Width × Depth"},
+
+  {"section":"Concrete","code":"C1","description":"Plain in-situ concrete","unit":"m³","formula":"Volume = Length × Width × Thickness"},
+  {"section":"Concrete","code":"C2","description":"Reinforced in-situ concrete","unit":"m³","formula":"Volume = Length × Width × Thickness"},
+
+  {"section":"Reinforcement","code":"D1","description":"High yield reinforcement bars","unit":"kg","formula":"Weight = (Dia² ÷ 162) × Length (m) × Qty"},
+
+  {"section":"Formwork","code":"E1","description":"Formwork to sides of foundations","unit":"m²","formula":"Area = Perimeter × Height"},
+  {"section":"Formwork","code":"E2","description":"Formwork to soffits of slabs","unit":"m²","formula":"Area = Length × Width"},
+
+  {"section":"Masonry","code":"F1","description":"Brickwork in walls","unit":"m³","formula":"Volume = Length × Height × Thickness"},
+  {"section":"Masonry","code":"F2","description":"Blockwork in walls","unit":"m³","formula":"Volume = Length × Height × Thickness"},
+
+  {"section":"Structural steel","code":"G1","description":"Structural steel members","unit":"kg","formula":"Weight = UnitWeight × Length"},
+
+  {"section":"Carpentry","code":"H1","description":"Timber framing","unit":"m","formula":"Length = Sum of member lengths"},
+
+  {"section":"Finishes","code":"J1","description":"Plaster to walls","unit":"m²","formula":"Area = Length × Height"},
+  {"section":"Finishes","code":"J2","description":"Floor tiling","unit":"m²","formula":"Area = Length × Width"},
+
+  {"section":"Roofing","code":"K1","description":"Roof covering","unit":"m²","formula":"Area = Plan area × slope factor"},
+
+  {"section":"Glazing","code":"L1","description":"Glazing in windows","unit":"m²","formula":"Area = Width × Height"},
+
+  {"section":"Painting","code":"M1","description":"Painting to walls","unit":"m²","formula":"Area = Length × Height"},
+
+  {"section":"Mechanical services","code":"N1","description":"Pipework","unit":"m","formula":"Length = Centerline length"},
+
+  {"section":"Electrical services","code":"P1","description":"Lighting point","unit":"nr","formula":"Count"},
+
+  {"section":"External works","code":"Q1","description":"Paving","unit":"m²","formula":"Area = Length × Width"}
+]
