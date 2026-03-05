@@ -107,7 +107,7 @@ function openProjectCreateModal(){
     form.appendChild(wrap);
   });
 
-  const createBtn = el('button', { class:'btn', type:'button', text:'Create Project' });
+  const createBtn = el('button', { class:'btn', type:'submit', text:'Create Project' });
 
   const footer = el('div', { class:'row row--end' }, [
     el('button', { class:'btn btn--secondary', type:'button', 'data-close-modal':'true', text:'Cancel' }),
@@ -116,7 +116,9 @@ function openProjectCreateModal(){
 
   const modal = openModal({ title:'New Project', bodyNode: form, footerNode: footer });
 
-  function createProject(){
+  function createProject(e){
+    e.preventDefault();
+    
     const project = {
       id: store.uid('project'),
       name: inputs.name.value.trim(),
@@ -129,6 +131,7 @@ function openProjectCreateModal(){
     };
 
     if(!project.name){
+      alert('Please enter a project name');
       inputs.name.focus();
       return;
     }
@@ -142,7 +145,11 @@ function openProjectCreateModal(){
 
     const verify = store.getState();
     const ok = Array.isArray(verify.projects) && verify.projects.some(p => p.id === project.id);
-    if(!ok) console.error('Project create failed to persist:', project);
+    if(!ok) {
+      console.error('Project create failed to persist:', project);
+      alert('Failed to create project. Please try again.');
+      return;
+    }
 
     modal.close();
     window.location.hash = '#/projects';
@@ -150,12 +157,12 @@ function openProjectCreateModal(){
     window.dispatchEvent(new Event('hashchange'));
   }
 
-  createBtn.addEventListener('click', createProject);
-
-  form.addEventListener('submit', (e)=>{
+  createBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    createProject();
+    createProject(e);
   });
+
+  form.addEventListener('submit', createProject);
 }
 
 export const ui = {
