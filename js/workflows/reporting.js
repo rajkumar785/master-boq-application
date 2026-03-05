@@ -2,6 +2,7 @@ import { store } from '../storage.js';
 import { ensureJsPdfAutoTable, ensureXlsx } from './loader.js';
 import { progressEngine } from './progress.js';
 import { cashflowEngine } from './cashflow.js';
+import { rebarEngine } from './rebar.js';
 
 function money(n){
   const x = Number(n || 0);
@@ -142,8 +143,28 @@ function buildConcreteMixRows(projectId){
 }
 
 function buildRebarScheduleRows(projectId){
-  // If BOQ contains reinforcement in kg, generate a simple schedule breakdown.
-  // (A true BBS should come from shape/length inputs; this is a reportable summary.)
+  // Prefer true BBS rows if the user entered bars in the BS 8666 beginner schedule.
+  const s = store.getState();
+  const bars = s.rebar?.[projectId]?.bars || [];
+  if(bars.length){
+    const sched = rebarEngine.getSchedule(projectId);
+    return sched.lines.map(l => [
+      String(l.host || ''),
+      String(l.rebarNo || ''),
+      String(l.dia || ''),
+      String(l.shapeCode || ''),
+      String(Number(l.qty || 0)),
+      String(Math.round(Number(l.A || 0))),
+      String(Math.round(Number(l.B || 0))),
+      String(Math.round(Number(l.C || 0))),
+      String(Math.round(Number(l.D || 0))),
+      String(Math.round(Number(l.E || 0))),
+      String(Math.round(Number(l.totalLenMm || 0))),
+      Number(l.volCm3 || 0)
+    ]);
+  }
+
+  // Fallback: if BOQ contains reinforcement in kg, generate a simple summary breakdown.
   const lines = getBoqLines(projectId);
   let steelKg = 0;
   for(const l of lines){
@@ -151,10 +172,11 @@ function buildRebarScheduleRows(projectId){
     const qty = Number(l.qty || 0);
     const unit = String(l.unit || '').trim().toLowerCase();
     const desc = String(l.description || '').toLowerCase();
-    if(unit === 'kg' && (desc.includes('reinforcement') || desc.includes('rebar') || desc.includes('steel'))) steelKg += qty;
+    if(unit === 'kg'){
+      if(desc.includes('reinforcement') || desc.includes('rebar') || desc.includes('steel')) steelKg += qty;
+    }
   }
 
-  // Provide indicative allocation across common diameters.
   const breakdown = [
     { dia: 8, pct: 10 },
     { dia: 10, pct: 15 },
@@ -326,13 +348,45 @@ export const reporting = {
     addTitleBlock(doc, { title: 'Reinforcement Schedule (Summary)', projectName, y: 54 });
 
     const rows = buildRebarScheduleRows(projectId);
-    doc.autoTable({
-      startY: 108,
-      head: [[ 'Bar Mark', 'Dia (mm)', 'Allocation', 'Weight (kg)' ]],
-      body: rows.map(r => [String(r[0]), String(r[1]), String(r[2]), money(r[3])]),
-      styles: { fontSize: 9, cellPadding: 5 },
-      headStyles: { fillColor: [30, 48, 86] }
-    });
+
+    const s = store.getState();
+    const hasBars = (s.rebar?.[projectId]?.bars || []).length > 0;
+    if(hasBars){
+      addTitleBlock(doc, { title: 'Bar Bending Schedule (BS 8666) — Beginner', projectName, y: 54 });
+      doc.autoTable({
+        startY: 108,
+        head: [[ 'Host', 'Rebar No.', 'Dia (mm)', 'Shape', 'Qty', 'A', 'B', 'C', 'D', 'E', 'Total Bar Length (mm)', 'Reinf. Volume (cm³)' ]],
+        body: rows.map(r => [
+          String(r[0]),
+          String(r[1]),
+          String(r[2]),
+          String(r[3]),
+          String(r[4]),
+          String(r[5]),
+          String(r[6]),
+          String(r[7]),
+          String(r[8]),
+          String(r[9]),
+          String(r[10]),
+          typeof r[11] === 'number' ? Number(r[11]).toFixed(2) : String(r[11])
+        ]),
+        styles: { fontSize: 8, cellPadding: 4 },
+        headStyles: { fillColor: [30, 48, 86] }
+      });
+
+      const totalKg = rebarEngine.getSchedule(projectId).totalKg;
+      const y = doc.lastAutoTable.finalY + 14;
+      doc.setFontSize(10);
+      doc.text(`Total steel weight: ${money(totalKg)} kg`, 40, y);
+    }else{
+      doc.autoTable({
+        startY: 108,
+        head: [[ 'Bar Mark', 'Dia (mm)', 'Allocation', 'Weight (kg)' ]],
+        body: rows.map(r => [String(r[0]), String(r[1]), String(r[2]), money(r[3])]),
+        styles: { fontSize: 9, cellPadding: 5 },
+        headStyles: { fillColor: [30, 48, 86] }
+      });
+    }
 
     addHeaderFooter(doc, { title: 'Rebar Schedule — Smart SMM7 Platform', projectName: projectName || 'N/A' });
     doc.save(`Rebar_Schedule_${(projectName || 'Project').replace(/\s+/g,'_')}.pdf`);

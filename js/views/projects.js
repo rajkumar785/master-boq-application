@@ -34,7 +34,6 @@ function projectRow(p, isActive){
 }
 
 export async function projectsView(){
-  const state = store.getState();
   const card = ui.el('div', { class:'card' });
 
   card.appendChild(ui.el('div', { class:'card__header' }, [
@@ -64,8 +63,16 @@ export async function projectsView(){
   ]));
 
   const tbody = ui.el('tbody');
-  (state.projects || []).forEach(p => tbody.appendChild(projectRow(p, p.id === state.activeProjectId)));
   table.appendChild(tbody);
+
+  function rebuild(){
+    const state = store.getState();
+    tbody.innerHTML = '';
+    (state.projects || []).forEach(p => tbody.appendChild(projectRow(p, p.id === state.activeProjectId)));
+  }
+
+  rebuild();
+  store.subscribe(rebuild);
   wrap.appendChild(table);
   body.appendChild(wrap);
 

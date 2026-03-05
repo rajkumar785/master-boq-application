@@ -4,6 +4,7 @@ import { takeoff } from '../workflows/takeoff.js';
 import { getSmm7Items } from '../workflows/smm7.js';
 import { measurementToQuantity } from '../workflows/quantity.js';
 import { automation } from '../workflows/automation.js';
+import { calculateExcavation, calculateConcreteVolume, calculateReinforcementWeight, calculateBrickworkArea, calculatePlasterArea, displayCalculationSteps } from '../workflows/educational-calculations.js';
 
 export async function takeoffView(){
   const state = store.getState();
@@ -80,6 +81,14 @@ export async function takeoffView(){
       ui.el('div', { style:'height:12px' }),
       ui.el('div', { class:'table-wrap' }, [
         ui.el('table', { class:'table', id:'takeoffMapTable' })
+      ]),
+      ui.el('div', { style:'height:20px' }),
+      ui.el('div', { class:'card', id:'calculationDisplay' }, [
+        ui.el('div', { class:'card__header' }, [
+          ui.el('div', { class:'card__title', text:'Step-by-Step Calculation' }),
+          ui.el('div', { class:'card__subtitle', text:'Educational breakdown of quantity calculations' })
+        ]),
+        ui.el('div', { class:'card__body', id:'calculationSteps' })
       ])
     ])
   ]);
