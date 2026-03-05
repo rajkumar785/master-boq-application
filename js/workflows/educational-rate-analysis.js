@@ -11,238 +11,164 @@ export function displayRateCalculationSteps(totals, container) {
   const header = document.createElement('div');
   header.className = 'card__header';
   header.innerHTML = `
-    <div class="card__title">Professional Rate Analysis Calculation</div>
-    <div class="card__subtitle">SMM7 compliant step-by-step breakdown</div>
+    <div class="card__title">🧮 Professional Rate Analysis Calculation</div>
+    <div class="card__subtitle">Easy-to-follow table format for beginners</div>
   `;
   container.appendChild(header);
   
-  // Add body with steps
+  // Add body with table format
   const body = document.createElement('div');
   body.className = 'card__body';
   
-  // Step 1: Direct Costs
-  const directStep = document.createElement('div');
-  directStep.className = 'calculation-step';
-  directStep.style.cssText = `
-    margin-bottom: 16px;
-    padding: 16px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  `;
-  
-  directStep.innerHTML = `
-    <div style="font-weight: 600; color: var(--primary); margin-bottom: 12px; font-size: 16px;">
-      📊 Step 1: Calculate Direct Costs
-    </div>
-    <div style="font-family: monospace; background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-      <strong>Formula:</strong> Direct Costs = Materials + Labour + Equipment<br>
-      <strong>Calculation:</strong> ${totals.mat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.lab.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.plant.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    </div>
-    <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
-      💡 <strong>Explanation:</strong> Sum of all direct cost components including materials, skilled labour, unskilled labour, and equipment/plant costs.
-    </div>
-  `;
-  body.appendChild(directStep);
-  
-  // Step 2: Add Waste (if applicable)
-  if (totals.waste > 0) {
-    const wasteStep = document.createElement('div');
-    wasteStep.className = 'calculation-step';
-    wasteStep.style.cssText = `
-      margin-bottom: 16px;
-      padding: 16px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    `;
-    
-    const wastePercentage = ((totals.waste / totals.direct) * 100).toFixed(1);
-    
-    wasteStep.innerHTML = `
-      <div style="font-weight: 600; color: var(--primary); margin-bottom: 12px; font-size: 16px;">
-        🔄 Step 2: Add Material Waste
-      </div>
-      <div style="font-family: monospace; background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-        <strong>Formula:</strong> Waste = Direct Costs × Waste Percentage<br>
-        <strong>Calculation:</strong> ${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × ${wastePercentage}% = ${totals.waste.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </div>
-      <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
-        💡 <strong>Explanation:</strong> Material waste allowance for cutting, breakage, handling losses, and transportation damage. Typical rates: Concrete 3%, Bricks 5%, Plaster 8%, Steel 2%.
-      </div>
-    `;
-    body.appendChild(wasteStep);
-  }
-  
-  // Step 3: Calculate Subtotal
-  const subtotalStep = document.createElement('div');
-  subtotalStep.className = 'calculation-step';
-  subtotalStep.style.cssText = `
-    margin-bottom: 16px;
-    padding: 16px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  `;
-  
-  subtotalStep.innerHTML = `
-    <div style="font-weight: 600; color: var(--primary); margin-bottom: 12px; font-size: 16px;">
-      📈 Step 3: Calculate Subtotal
-    </div>
-    <div style="font-family: monospace; background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-      <strong>Formula:</strong> Subtotal = Direct Costs + Waste<br>
-      <strong>Calculation:</strong> ${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.waste.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    </div>
-    <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
-      💡 <strong>Explanation:</strong> Subtotal represents the total direct cost before adding overhead and profit margins.
-    </div>
-  `;
-  body.appendChild(subtotalStep);
-  
-  // Step 4: Add Overhead
-  const overheadStep = document.createElement('div');
-  overheadStep.className = 'calculation-step';
-  overheadStep.style.cssText = `
-    margin-bottom: 16px;
-    padding: 16px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  `;
-  
-  const overheadPercentage = ((totals.overhead / totals.subTotal) * 100).toFixed(1);
-  
-  overheadStep.innerHTML = `
-    <div style="font-weight: 600; color: var(--primary); margin-bottom: 12px; font-size: 16px;">
-      🏢 Step 4: Add Overhead
-    </div>
-    <div style="font-family: monospace; background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-      <strong>Formula:</strong> Overhead = Subtotal × Overhead Percentage<br>
-      <strong>Calculation:</strong> ${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × ${overheadPercentage}% = ${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    </div>
-    <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
-      💡 <strong>Explanation:</strong> Site overhead covers supervision, temporary works, site administration, safety equipment, utilities, and general site expenses. Typical range: 10-15%.
-    </div>
-  `;
-  body.appendChild(overheadStep);
-  
-  // Step 5: Add Profit
-  const profitStep = document.createElement('div');
-  profitStep.className = 'calculation-step';
-  profitStep.style.cssText = `
-    margin-bottom: 16px;
-    padding: 16px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  `;
-  
-  const profitPercentage = ((totals.profit / (totals.subTotal + totals.overhead)) * 100).toFixed(1);
-  
-  profitStep.innerHTML = `
-    <div style="font-weight: 600; color: var(--primary); margin-bottom: 12px; font-size: 16px;">
-      💰 Step 5: Add Profit
-    </div>
-    <div style="font-family: monospace; background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-      <strong>Formula:</strong> Profit = (Subtotal + Overhead) × Profit Percentage<br>
-      <strong>Calculation:</strong> (${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) × ${profitPercentage}% = ${totals.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    </div>
-    <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
-      💡 <strong>Explanation:</strong> Contractor's profit margin on the project. Covers business overheads, risk, and return on investment. Typical range: 8-15%.
-    </div>
-  `;
-  body.appendChild(profitStep);
-  
-  // Step 6: Final Rate
-  const finalStep = document.createElement('div');
-  finalStep.className = 'calculation-step';
-  finalStep.style.cssText = `
-    margin-bottom: 16px;
-    padding: 20px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  // Create calculation table
+  const calcTable = document.createElement('table');
+  calcTable.className = 'table';
+  calcTable.style.cssText = `
+    margin-bottom: 20px;
     border: 2px solid var(--primary);
     border-radius: 8px;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
   `;
   
-  finalStep.innerHTML = `
-    <div style="font-weight: 700; margin-bottom: 16px; font-size: 18px; text-align: center;">
-      🎯 Step 6: Final Unit Rate
+  calcTable.innerHTML = `
+    <thead>
+      <tr style="background: var(--primary); color: white;">
+        <th style="padding: 12px; text-align: left;">📊 Step</th>
+        <th style="padding: 12px; text-align: left;">📝 Description</th>
+        <th style="padding: 12px; text-align: left;">🧮 Formula</th>
+        <th style="padding: 12px; text-align: left;">📈 Calculation</th>
+        <th style="padding: 12px; text-align: right;">💰 Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background: var(--panel);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">1</td>
+        <td style="padding: 12px;">📦 Materials Cost</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Sum of all materials</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.mat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding: 12px; text-align: right; font-weight: 600; color: #3b82f6;">${totals.mat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+      <tr style="background: var(--bg);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">2</td>
+        <td style="padding: 12px;">👷 Labour Cost</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Sum of all labour</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.lab.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding: 12px; text-align: right; font-weight: 600; color: #10b981;">${totals.lab.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+      <tr style="background: var(--panel);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">3</td>
+        <td style="padding: 12px;">🏗 Equipment Cost</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Sum of all equipment</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.plant.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding: 12px; text-align: right; font-weight: 600; color: #f59e0b;">${totals.plant.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+      <tr style="background: var(--bg); border-top: 2px solid var(--border);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">4</td>
+        <td style="padding: 12px; font-weight: 600;">📊 Direct Cost</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Materials + Labour + Equipment</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.mat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.lab.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.plant.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding: 12px; text-align: right; font-weight: 700; color: var(--primary);">${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+  `;
+  
+  // Add waste row if applicable
+  if (totals.waste > 0) {
+    const wastePercentage = ((totals.waste / totals.direct) * 100).toFixed(1);
+    calcTable.innerHTML += `
+      <tr style="background: var(--panel);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">5</td>
+        <td style="padding: 12px;">🔄 Material Waste</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Direct Cost × ${wastePercentage}%</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × ${wastePercentage}%</td>
+        <td style="padding: 12px; text-align: right; font-weight: 600; color: #ef4444;">${totals.waste.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+      <tr style="background: var(--bg); border-top: 2px solid var(--border);">
+        <td style="padding: 12px; font-weight: 600; color: var(--primary);">6</td>
+        <td style="padding: 12px; font-weight: 600;">📈 Subtotal</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">Direct Cost + Waste</td>
+        <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.direct.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.waste.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding: 12px; text-align: right; font-weight: 700; color: var(--primary);">${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+    `;
+  }
+  
+  // Add overhead row
+  const overheadPercentage = ((totals.overhead / totals.subTotal) * 100).toFixed(1);
+  calcTable.innerHTML += `
+    <tr style="background: var(--panel);">
+      <td style="padding: 12px; font-weight: 600; color: var(--primary);">${totals.waste > 0 ? '7' : '5'}</td>
+      <td style="padding: 12px;">🏢 Overhead</td>
+      <td style="padding: 12px; font-family: monospace; font-size: 13px;">Subtotal × ${overheadPercentage}%</td>
+      <td style="padding: 12px; font-family: monospace; font-size: 13px;">${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × ${overheadPercentage}%</td>
+      <td style="padding: 12px; text-align: right; font-weight: 600; color: #8b5cf6;">${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+    </tr>
+  `;
+  
+  // Add profit row
+  const profitPercentage = ((totals.profit / (totals.subTotal + totals.overhead)) * 100).toFixed(1);
+  calcTable.innerHTML += `
+    <tr style="background: var(--bg);">
+      <td style="padding: 12px; font-weight: 600; color: var(--primary);">${totals.waste > 0 ? '8' : '6'}</td>
+      <td style="padding: 12px;">💰 Profit</td>
+      <td style="padding: 12px; font-family: monospace; font-size: 13px;">(Subtotal + Overhead) × ${profitPercentage}%</td>
+      <td style="padding: 12px; font-family: monospace; font-size: 13px;">(${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) × ${profitPercentage}%</td>
+      <td style="padding: 12px; text-align: right; font-weight: 600; color: #06b6d4;">${totals.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+    </tr>
+  `;
+  
+  // Add final rate row
+  calcTable.innerHTML += `
+    <tr style="background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: white; border-top: 3px solid white;">
+      <td style="padding: 16px; font-weight: 700; font-size: 16px;">🎯</td>
+      <td style="padding: 16px; font-weight: 700; font-size: 16px;">FINAL RATE</td>
+      <td style="padding: 16px; font-family: monospace; font-size: 14px;">Subtotal + Overhead + Profit</td>
+      <td style="padding: 16px; font-family: monospace; font-size: 14px;">${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      <td style="padding: 16px; text-align: right; font-weight: 700; font-size: 18px;">${totals.finalRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+    </tr>
+  `;
+  
+  calcTable.innerHTML += '</tbody>';
+  body.appendChild(calcTable);
+  
+  // Add beginner-friendly explanation section
+  const explanationDiv = document.createElement('div');
+  explanationDiv.className = 'card';
+  explanationDiv.style.cssText = 'margin-top: 20px;';
+  explanationDiv.innerHTML = `
+    <div class="card__header">
+      <div class="card__title">📚 Beginner's Guide to Rate Analysis</div>
+      <div class="card__subtitle">Understanding each step in simple terms</div>
     </div>
-    <div style="font-family: monospace; background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid white;">
-      <strong>Formula:</strong> Final Rate = Subtotal + Overhead + Profit<br>
-      <strong>Calculation:</strong> ${totals.subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + ${totals.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${totals.finalRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    </div>
-    <div style="font-size: 20px; font-weight: 700; text-align: center; padding: 16px; background: rgba(255,255,255,0.2); border-radius: 8px; border: 2px solid white;">
-      🏆 FINAL UNIT RATE = ${totals.finalRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} per unit
+    <div class="card__body">
+      <div style="display: grid; gap: 12px;">
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #3b82f6;">
+          <div style="font-weight: 600; color: #3b82f6; margin-bottom: 4px;">📦 Materials Cost</div>
+          <div style="font-size: 13px; color: var(--muted);">Cost of all raw materials needed for one unit of work (cement, steel, bricks, etc.)</div>
+        </div>
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #10b981;">
+          <div style="font-weight: 600; color: #10b981; margin-bottom: 4px;">👷 Labour Cost</div>
+          <div style="font-size: 13px; color: var(--muted);">Wages for workers to complete one unit of work (masons, carpenters, laborers)</div>
+        </div>
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #f59e0b;">
+          <div style="font-weight: 600; color: #f59e0b; margin-bottom: 4px;">🏗 Equipment Cost</div>
+          <div style="font-size: 13px; color: var(--muted);">Cost of machines and tools used (mixers, vibrators, scaffolding)</div>
+        </div>
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #ef4444;">
+          <div style="font-weight: 600; color: #ef4444; margin-bottom: 4px;">🔄 Material Waste</div>
+          <div style="font-size: 13px; color: var(--muted);">Extra material for cutting, breakage, and transport losses (typically 3-10%)</div>
+        </div>
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #8b5cf6;">
+          <div style="font-weight: 600; color: #8b5cf6; margin-bottom: 4px;">🏢 Overhead</div>
+          <div style="font-size: 13px; color: var(--muted);">Site expenses like supervision, office, safety, tools, and utilities (10-15%)</div>
+        </div>
+        <div style="padding: 12px; background: var(--panel); border-radius: 6px; border-left: 4px solid #06b6d4;">
+          <div style="font-weight: 600; color: #06b6d4; margin-bottom: 4px;">💰 Profit</div>
+          <div style="font-size: 13px; color: var(--muted);">Contractor's profit margin for business risk and investment return (8-15%)</div>
+        </div>
+      </div>
     </div>
   `;
-  body.appendChild(finalStep);
-  
-  // Component breakdown summary
-  const breakdownDiv = document.createElement('div');
-  breakdownDiv.className = 'component-breakdown';
-  breakdownDiv.style.cssText = `
-    margin-top: 24px;
-    padding: 20px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  `;
-  
-  const total = totals.finalRate;
-  const matPercent = ((totals.mat / total) * 100).toFixed(1);
-  const labPercent = ((totals.lab / total) * 100).toFixed(1);
-  const plantPercent = ((totals.plant / total) * 100).toFixed(1);
-  const wastePercent = ((totals.waste / total) * 100).toFixed(1);
-  const overheadPercent = ((totals.overhead / total) * 100).toFixed(1);
-  const profitPercent = ((totals.profit / total) * 100).toFixed(1);
-  
-  breakdownDiv.innerHTML = `
-    <div style="font-weight: 600; margin-bottom: 16px; color: var(--primary); font-size: 16px;">
-      📊 Component Breakdown Analysis
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #3b82f6;">
-        <div style="font-weight: 600; color: #3b82f6;">📦 Materials</div>
-        <div style="font-size: 14px;">${matPercent}% (${totals.mat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #10b981;">
-        <div style="font-weight: 600; color: #10b981;">👷 Labour</div>
-        <div style="font-size: 14px;">${labPercent}% (${totals.lab.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #f59e0b;">
-        <div style="font-weight: 600; color: #f59e0b;">🏗 Equipment</div>
-        <div style="font-size: 14px;">${plantPercent}% (${totals.plant.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #ef4444;">
-        <div style="font-weight: 600; color: #ef4444;">♻️ Waste</div>
-        <div style="font-size: 14px;">${wastePercent}% (${totals.waste.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #8b5cf6;">
-        <div style="font-weight: 600; color: #8b5cf6;">🏢 Overhead</div>
-        <div style="font-size: 14px;">${overheadPercent}% (${totals.overhead.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-      <div style="padding: 12px; background: var(--bg); border-radius: 6px; border-left: 3px solid #06b6d4;">
-        <div style="font-weight: 600; color: #06b6d4;">💰 Profit</div>
-        <div style="font-size: 14px;">${profitPercent}% (${totals.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-      </div>
-    </div>
-    <div style="padding: 16px; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 8px; border: 2px solid var(--border); text-align: center;">
-      <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">TOTAL COST BREAKDOWN</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--text);">
-        Materials: ${matPercent}% | Labour: ${labPercent}% | Equipment: ${plantPercent}% | Waste: ${wastePercent}% | Overhead: ${overheadPercent}% | Profit: ${profitPercent}%
-      </div>
-    </div>
-  `;
-  body.appendChild(breakdownDiv);
+  body.appendChild(explanationDiv);
   
   container.appendChild(body);
 }

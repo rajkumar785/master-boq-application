@@ -56,7 +56,7 @@ function rowAmount(r){
 }
 
 function sumRows(rows){
-  return (rows || []).reduce((acc, r) => acc + rowAmount(r), 0);
+  return rows.reduce((sum, r) => sum + rowAmount(r), 0);
 }
 
 function computeTotals(a){
@@ -140,17 +140,41 @@ export async function rateView(){
   ]));
   const headerBody = ui.el('div', { class:'card__body' });
 
+  // Add instructions section
+  const instructionsDiv = ui.el('div', { 
+    class:'card', 
+    style:'margin-bottom:16px; background: var(--panel); border: 1px solid var(--border);' 
+  });
+  instructionsDiv.appendChild(ui.el('div', { class:'card__header' }, [
+    ui.el('div', { class:'card__title', text:'📋 How to Use Rate Analysis' })
+  ]));
+  const instructionsBody = ui.el('div', { class:'card__body' });
+  instructionsBody.innerHTML = `
+    <div style="display: grid; gap: 8px; font-size: 14px; line-height: 1.5;">
+      <div>🔢 <strong>Step 1:</strong> Select a BOQ item from dropdown</div>
+      <div>� <strong>Step 2:</strong> Click "🔍 Auto-Detect SMM7" for automatic template matching</div>
+      <div>📋 <strong>Step 3:</strong> Or manually select from SMM7 template dropdown</div>
+      <div>🧮 <strong>Step 4:</strong> Click "🧮 Calculate Now" to see detailed calculation steps</div>
+      <div>💰 <strong>Step 5:</strong> Adjust waste, overhead, and profit percentages</div>
+      <div>✅ <strong>Step 6:</strong> Click "Apply Rate to BOQ Item" to save the final rate</div>
+    </div>
+  `;
+  instructionsDiv.appendChild(instructionsBody);
+  headerBody.appendChild(instructionsDiv);
+
   const itemSel = ui.el('select');
   const itemTitle = ui.el('div', { class:'badge', text:'' });
 
   const templateSel = ui.el('select');
   const btnLoadTemplate = ui.el('button', { class:'btn btn--secondary', type:'button', text:'Load Template' });
+  const btnAutoDetect = ui.el('button', { class:'btn btn--success', type:'button', text:'🔍 Auto-Detect SMM7' });
 
   const wastePct = ui.el('input', { type:'number', value:'0', step:'0.1', min:'0' });
   const overheadPct = ui.el('input', { type:'number', value:'12', step:'0.1', min:'0' });
   const profitPct = ui.el('input', { type:'number', value:'10', step:'0.1', min:'0' });
 
   const btnApplyToBoq = ui.el('button', { class:'btn btn--primary', type:'button', text:'Apply Rate to BOQ Item' });
+  const btnCalculate = ui.el('button', { class:'btn btn--success', type:'button', text:'🧮 Calculate Now' });
   const btnAddMat = ui.el('button', { class:'btn', type:'button', text:'Add Material Row' });
   const btnAddLab = ui.el('button', { class:'btn', type:'button', text:'Add Labour Row' });
   const btnAddPlant = ui.el('button', { class:'btn', type:'button', text:'Add Plant Row' });
@@ -222,6 +246,36 @@ export async function rateView(){
     });
   }
 
+  function detectAndApplySMM7Template() {
+    const it = getSelectedItem();
+    if(!it) return;
+    
+    const detectedTemplate = detectTemplateKey({ description: it.description, unit: it.unit });
+    if(detectedTemplate && detectedTemplate !== 'custom') {
+      templateSel.value = detectedTemplate;
+      const a = ensureSelectedAnalysis();
+      if(a) {
+        applyTemplate(a, detectedTemplate);
+        setAnalysis(projectId, it.id, a);
+        rebuild();
+        
+        // Show success message
+        const successMsg = ui.el('div', { 
+          class:'badge', 
+          text:`📋 SMM7 template "${templateSel.options[templateSel.selectedIndex]?.text}" auto-detected and applied!`,
+          style:'background: var(--success); color: white; margin: 8px 0;'
+        });
+        headerBody.insertBefore(successMsg, headerBody.children[headerBody.children.length - 1]);
+        
+        setTimeout(() => {
+          if (successMsg.parentNode) {
+            successMsg.parentNode.removeChild(successMsg);
+          }
+        }, 4000);
+      }
+    }
+  }
+
   function updateHeader(){
     const it = getSelectedItem();
     if(!it){
@@ -245,8 +299,29 @@ export async function rateView(){
     const a = ensureSelectedAnalysis();
 
     ensureTemplateOptions();
+    
+    // Auto-detect and apply SMM7 template if no template is selected
     if(!templateSel.value || templateSel.value === 'custom'){
-      templateSel.value = detectTemplateKey({ description: it.description, unit: it.unit });
+      const detectedTemplate = detectTemplateKey({ description: it.description, unit: it.unit });
+      if(detectedTemplate && detectedTemplate !== 'custom') {
+        templateSel.value = detectedTemplate;
+        applyTemplate(a, detectedTemplate);
+        setAnalysis(projectId, it.id, a);
+        
+        // Show auto-detection message
+        const autoMsg = ui.el('div', { 
+          class:'badge', 
+          text:`🔍 SMM7 template auto-detected: "${templateSel.options[templateSel.selectedIndex]?.text}"`,
+          style:'background: var(--info); color: white; margin: 8px 0; font-size: 12px;'
+        });
+        headerBody.insertBefore(autoMsg, headerBody.children[headerBody.children.length - 1]);
+        
+        setTimeout(() => {
+          if (autoMsg.parentNode) {
+            autoMsg.parentNode.removeChild(autoMsg);
+          }
+        }, 3000);
+      }
     }
 
     wastePct.value = String(a.wastePct ?? 0);
@@ -470,6 +545,10 @@ export async function rateView(){
       rebuild();
     });
 
+    btnAutoDetect.addEventListener('click', () => {
+      detectAndApplySMM7Template();
+    });
+
     btnLoadTemplate.addEventListener('click', () => {
       const it = getSelectedItem();
       if(!it) return;
@@ -510,6 +589,34 @@ export async function rateView(){
       rebuild();
     });
 
+    btnCalculate.addEventListener('click', () => {
+      const it = getSelectedItem();
+      if(!it) {
+        alert('Please select a BOQ item first!');
+        return;
+      }
+      const a = ensureSelectedAnalysis();
+      if(!a) return;
+      
+      // Force recalculation and display
+      const totals = computeTotals(a);
+      displayRateCalculationSteps(totals, calculationDisplay);
+      
+      // Show success message
+      const successMsg = ui.el('div', { 
+        class:'badge', 
+        text:'✅ Calculation completed! Check below for detailed steps.',
+        style:'background: var(--success); color: white; margin: 8px 0;'
+      });
+      headerBody.insertBefore(successMsg, headerBody.children[headerBody.children.length - 1]);
+      
+      setTimeout(() => {
+        if (successMsg.parentNode) {
+          successMsg.parentNode.removeChild(successMsg);
+        }
+      }, 3000);
+    });
+
     btnApplyToBoq.addEventListener('click', () => {
       const it = getSelectedItem();
       if(!it) return;
@@ -534,11 +641,11 @@ export async function rateView(){
   headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'BOQ Item' }), itemSel]));
   headerBody.appendChild(itemTitle);
   headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Micro analysis template' }), templateSel]));
-  headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Template action' }), ui.el('div', { class:'row' }, [btnLoadTemplate])]));
+  headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Template action' }), ui.el('div', { class:'row' }, [btnAutoDetect, btnLoadTemplate])]));
   headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Wastage (%)' }), wastePct]));
   headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Overheads (%)' }), overheadPct]));
   headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Profit (%)' }), profitPct]));
-  headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Actions' }), ui.el('div', { class:'row' }, [btnAddMat, btnAddLab, btnAddPlant, btnApplyToBoq])]));
+  headerBody.appendChild(ui.el('div', { class:'field' }, [ui.el('label', { text:'Actions' }), ui.el('div', { class:'row' }, [btnCalculate, btnAddMat, btnAddLab, btnAddPlant, btnApplyToBoq])]));
 
   headerBody.appendChild(ui.el('div', { style:'height:10px' }));
   headerBody.appendChild(totalsBadge);

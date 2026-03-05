@@ -12,9 +12,52 @@ function ensureProjectBoq(state, projectId){
   if(!state.boq[projectId]){
     state.boq[projectId] = {
       lines: [
-        { id: store.uid('sec'), type:'section', section:'Groundworks' },
-        { id: store.uid('item'), type:'item', itemNo:'1', description:'Excavation to reduce levels', unit:'m³', qty:10, rate:25 },
-        { id: store.uid('item'), type:'item', itemNo:'2', description:'Backfilling and compaction', unit:'m³', qty:8, rate:18 }
+        // A: PRELIMINARIES
+        { id: store.uid('sec'), type:'section', section:'A: PRELIMINARIES' },
+        { id: store.uid('item'), type:'item', itemNo:'A1', description:'Site Setup and Establishment', unit:'lump sum', qty:1, rate:150000 },
+        { id: store.uid('item'), type:'item', itemNo:'A2', description:'Temporary Works and Protection', unit:'lump sum', qty:1, rate:85000 },
+        
+        // E: SUBSTRUCTURE
+        { id: store.uid('sec'), type:'section', section:'E: SUBSTRUCTURE' },
+        { id: store.uid('item'), type:'item', itemNo:'E1', description:'General Excavation by Machine', unit:'m³', qty:50, rate:85 },
+        { id: store.uid('item'), type:'item', itemNo:'E2', description:'Trench Excavation for Foundations', unit:'m³', qty:25, rate:120 },
+        { id: store.uid('item'), type:'item', itemNo:'E3', description:'Blinding Concrete Grade 15', unit:'m³', qty:15, rate:2500 },
+        { id: store.uid('item'), type:'item', itemNo:'E4', description:'Reinforced Concrete Grade 25 - Foundations', unit:'m³', qty:40, rate:3200 },
+        { id: store.uid('item'), type:'item', itemNo:'E5', description:'Reinforcement for Foundations', unit:'kg', qty:2500, rate:65 },
+        { id: store.uid('item'), type:'item', itemNo:'E6', description:'Formwork for Foundations', unit:'m²', qty:120, rate:180 },
+        
+        // F: SUPERSTRUCTURE
+        { id: store.uid('sec'), type:'section', section:'F: SUPERSTRUCTURE' },
+        { id: store.uid('item'), type:'item', itemNo:'F1', description:'Reinforced Concrete Columns Grade 30', unit:'m³', qty:25, rate:3500 },
+        { id: store.uid('item'), type:'item', itemNo:'F2', description:'Reinforced Concrete Beams Grade 30', unit:'m³', qty:35, rate:3400 },
+        { id: store.uid('item'), type:'item', itemNo:'F3', description:'Reinforced Concrete Slab Grade 25', unit:'m³', qty:80, rate:3100 },
+        { id: store.uid('item'), type:'item', itemNo:'F4', description:'Reinforcement for Slabs', unit:'kg', qty:4800, rate:65 },
+        { id: store.uid('item'), type:'item', itemNo:'F5', description:'Brickwork in Cement Mortar 1:4', unit:'m²', qty:250, rate:850 },
+        { id: store.uid('item'), type:'item', itemNo:'F6', description:'Concrete Blockwork in Cement Mortar 1:6', unit:'m²', qty:180, rate:650 },
+        
+        // G: FINISHES
+        { id: store.uid('sec'), type:'section', section:'G: FINISHES' },
+        { id: store.uid('item'), type:'item', itemNo:'G1', description:'Cement Plaster 12mm Thick - Walls', unit:'m²', qty:450, rate:280 },
+        { id: store.uid('item'), type:'item', itemNo:'G2', description:'Cement Plaster 12mm Thick - Ceiling', unit:'m²', qty:200, rate:320 },
+        { id: store.uid('item'), type:'item', itemNo:'G3', description:'Internal Emulsion Paint 2 Coats', unit:'m²', qty:650, rate:180 },
+        { id: store.uid('item'), type:'item', itemNo:'G4', description:'External Weatherproof Paint 2 Coats', unit:'m²', qty:220, rate:350 },
+        { id: store.uid('item'), type:'item', itemNo:'G5', description:'Ceramic Floor Tiles 300x300mm', unit:'m²', qty:180, rate:280 },
+        { id: store.uid('item'), type:'item', itemNo:'G6', description:'Ceramic Wall Tiles 200x200mm', unit:'m²', qty:120, rate:320 },
+        { id: store.uid('item'), type:'item', itemNo:'G7', description:'Vinyl Floor Tiles', unit:'m²', qty:150, rate:180 },
+        
+        // L: EXTERNAL WORKS
+        { id: store.uid('sec'), type:'section', section:'L: EXTERNAL WORKS' },
+        { id: store.uid('item'), type:'item', itemNo:'L1', description:'Site Clearance and Grubbing', unit:'m²', qty:500, rate:25 },
+        { id: store.uid('item'), type:'item', itemNo:'L2', description:'Road Subbase Granular Material', unit:'m³', qty:120, rate:450 },
+        { id: store.uid('item'), type:'item', itemNo:'L3', description:'Asphalt Paving 50mm Thick', unit:'m²', qty:300, rate:280 },
+        { id: store.uid('item'), type:'item', itemNo:'L4', description:'Landscaping and Turfing', unit:'m²', qty:200, rate:85 },
+        { id: store.uid('item'), type:'item', itemNo:'L5', description:'Surface Water Drainage', unit:'m', qty:80, rate:120 },
+        
+        // M: SERVICES
+        { id: store.uid('sec'), type:'section', section:'M: SERVICES' },
+        { id: store.uid('item'), type:'item', itemNo:'M1', description:'Electrical Wiring and Installation', unit:'point', qty:25, rate:850 },
+        { id: store.uid('item'), type:'item', itemNo:'M2', description:'Plumbing Water Supply Installation', unit:'m', qty:150, rate:95 },
+        { id: store.uid('item'), type:'item', itemNo:'M3', description:'HVAC Ducting Installation', unit:'m²', qty:80, rate:220 }
       ]
     };
   }
