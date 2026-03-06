@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMM7 Library Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>📚 SMM7 Library Test</h1>
+    <div id="results"></div>
+    
+    <div class="test">
+        <h3>🔍 Test SMM7 Data File</h3>
+        <button onclick="testSmm7Data()">Test SMM7 Data</button>
+        <div id="data-result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>🌐 Test Fetch Function</h3>
+        <button onclick="testFetchFunction()">Test Fetch Function</button>
+        <div id="fetch-result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>📋 Display Sample Items</h3>
+        <div id="sample-items"></div>
+    </div>
+
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        function addTest(name, status, message = '') {
+            const div = document.createElement('div');
+            div.className = `test ${status}`;
+            div.innerHTML = `
+                <strong>${name}:</strong> 
+                ${status === 'pass' ? '✅ PASS' : status === 'fail' ? '❌ FAIL' : 'ℹ️ INFO'}
+                ${message ? `<br><small>${message}</small>` : ''}
+            `;
+            results.appendChild(div);
+        }
+
+        function testSmm7Data() {
+            const resultDiv = document.getElementById('data-result');
+            
+            // Test if JSON file exists and is valid
+            fetch('./data/smm7_items.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        const sample = data.slice(0, 3);
+                        let tableHtml = `
+                            <h4>✅ Sample SMM7 Items (${data.length} total):</h4>
+                            <table>
+                                <tr>
+                                    <th>Section</th>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Unit</th>
+                                    <th>Formula</th>
+                                </tr>
+                        `;
+                        
+                        sample.forEach(item => {
+                            tableHtml += `
+                                <tr>
+                                    <td>${item.section}</td>
+                                    <td>${item.code}</td>
+                                    <td>${item.description}</td>
+                                    <td>${item.unit}</td>
+                                    <td>${item.formula}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        tableHtml += '</table>';
+                        resultDiv.innerHTML = tableHtml;
+                        addTest('SMM7 Data File', 'pass', `Found ${data.length} items`);
+                    } else {
+                        throw new Error('Invalid data format');
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `❌ Error: ${error.message}`;
+                    addTest('SMM7 Data File', 'fail', error.message);
+                });
+        }
+
+        function testFetchFunction() {
+            const resultDiv = document.getElementById('fetch-result');
+            
+            // Test the actual getSmm7Items function
+            import('./js/workflows/smm7.js')
+                .then(module => {
+                    module.getSmm7Items()
+                        .then(items => {
+                            if (Array.isArray(items) && items.length > 0) {
+                                resultDiv.innerHTML = `✅ Fetch function works! Loaded ${items.length} items`;
+                                addTest('SMM7 Fetch Function', 'pass', 'Function returns valid data');
+                            } else {
+                                resultDiv.innerHTML = '❌ Fetch function failed: Invalid data returned';
+                                addTest('SMM7 Fetch Function', 'fail', 'Function returned invalid data');
+                            }
+                        })
+                        .catch(error => {
+                            resultDiv.innerHTML = `❌ Fetch function error: ${error.message}`;
+                            addTest('SMM7 Fetch Function', 'fail', error.message);
+                        });
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `❌ Module import failed: ${error.message}`;
+                    addTest('SMM7 Module Import', 'fail', error.message);
+                });
+        }
+
+        // Auto-run tests
+        testSmm7Data();
+        testFetchFunction();
+        
+        // Add summary
+        setTimeout(() => {
+            addTest('SMM7 Library Status', 'info', 
+                'The SMM7 library has been fixed with:<br>' +
+                '• Error handling for fetch failures<br>' +
+                '• Fallback data for offline use<br>' +
+                '• Enhanced library view with search<br>' +
+                '• Loading states and error messages'
+            );
+        }, 1000);
+    </script>
+</body>
+</html>
