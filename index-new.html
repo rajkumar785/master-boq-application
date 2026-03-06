@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMM7 Construction Estimating</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --secondary: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #ffffff;
+            --border: #e5e7eb;
+            --text: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: var(--radius);
+        }
+
+        .header h1 {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .nav button.active {
+            background: var(--success);
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .flex {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .flex-between {
+            justify-content: space-between;
+        }
+
+        .flex-end {
+            justify-content: flex-end;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .success {
+            background: var(--success);
+        }
+
+        .warning {
+            background: var(--warning);
+        }
+
+        .danger {
+            background: var(--danger);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav {
+                flex-direction: column;
+            }
+            
+            .flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>SMM7 Construction Estimating Platform</h1>
+        </header>
+
+        <nav class="nav">
+            <button onclick="showView('dashboard')" class="active">Dashboard</button>
+            <button onclick="showView('projects')">Projects</button>
+            <button onclick="showView('library')">SMM7 Library</button>
+            <button onclick="showView('boq')">BOQ</button>
+            <button onclick="showView('rate')">Rate Analysis</button>
+        </nav>
+
+        <main id="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Dashboard</h2>
+                        <p class="card-subtitle">Project overview and quick actions</p>
+                    </div>
+                    <div class="grid grid-3">
+                        <div class="card">
+                            <h3>Active Project</h3>
+                            <p id="active-project-name">No active project</p>
+                        </div>
+                        <div class="card">
+                            <h3>Total Projects</h3>
+                            <p id="total-projects">0</p>
+                        </div>
+                        <div class="card">
+                            <h3>SMM7 Items</h3>
+                            <p>37 Standard Items</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects View -->
+            <div id="projects-view" class="view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Project Management</h2>
+                        <p class="card-subtitle">Create and manage construction projects</p>
+                    </div>
+                    <div class="flex flex-between">
+                        <button class="btn btn-success" onclick="openProjectModal()">New Project</button>
+                        <span class="badge" id="project-count">0 Projects</span>
+                    </div>
+                    <div id="projects-list"></div>
+                </div>
+            </div>
+
+            <!-- SMM7 Library View -->
+            <div id="library-view" class="view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">SMM7 Item Library</h2>
+                        <p class="card-subtitle">Standard measurement items with formulas</p>
+                    </div>
+                    <input type="text" id="library-search" placeholder="Search items..." style="width: 100%; margin-bottom: 1rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                    <div id="library-content"></div>
+                </div>
+            </div>
+
+            <!-- BOQ View -->
+            <div id="boq-view" class="view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Bill of Quantities</h2>
+                        <p class="card-subtitle">Create and manage BOQ items</p>
+                    </div>
+                    <div id="boq-content">
+                        <p>Select a project to view BOQ items</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rate Analysis View -->
+            <div id="rate-view" class="view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Rate Analysis</h2>
+                        <p class="card-subtitle">Calculate unit rates with cost breakdown</p>
+                    </div>
+                    <div id="rate-content">
+                        <p>Select a project to perform rate analysis</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">New Project</h3>
+                <button class="close-btn" onclick="closeProjectModal()">&times;</button>
+            </div>
+            <form id="project-form" onsubmit="saveProject(event)">
+                <div class="form-group">
+                    <label for="project-name">Project Name *</label>
+                    <input type="text" id="project-name" required>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="project-client">Client</label>
+                        <input type="text" id="project-client">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-location">Location</label>
+                        <input type="text" id="project-location">
+                    </div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="project-type">Building Type</label>
+                        <input type="text" id="project-type">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-floors">Number of Floors</label>
+                        <input type="number" id="project-floors" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="project-duration">Duration (months)</label>
+                    <input type="number" id="project-duration" min="1">
+                </div>
+                <div class="flex flex-end">
+                    <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let appState = {
+            projects: [],
+            activeProjectId: null,
+            smm7Items: []
+        };
+
+        // Initialize Application
+        function initApp() {
+            loadState();
+            loadSMM7Items();
+            updateDashboard();
+            showView('dashboard');
+        }
+
+        // State Management
+        function saveState() {
+            localStorage.setItem('smm7-app-state', JSON.stringify(appState));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('smm7-app-state');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+        }
+
+        // SMM7 Items
+        function loadSMM7Items() {
+            const smm7Data = [
+                {"section":"Preliminaries","code":"A1","description":"General items, attendance, temporary works","unit":"item","formula":"Item"},
+                {"section":"Groundworks","code":"B1","description":"Site clearance","unit":"m²","formula":"Area = Length × Width"},
+                {"section":"Groundworks","code":"B2","description":"Excavation to reduce levels","unit":"m³","formula":"Volume = Length × Width × Depth"},
+                {"section":"Concrete","code":"C1","description":"Plain in-situ concrete","unit":"m³","formula":"Volume = Length × Width × Thickness"},
+                {"section":"Reinforcement","code":"D1","description":"High yield reinforcement bars","unit":"kg","formula":"Weight = (Dia² ÷ 162) × Length"},
+                {"section":"Formwork","code":"E1","description":"Formwork to sides of foundations","unit":"m²","formula":"Area = Perimeter × Height"},
+                {"section":"Masonry","code":"F1","description":"Brickwork in walls","unit":"m³","formula":"Volume = Length × Height × Thickness"},
+                {"section":"Finishes","code":"J1","description":"Plaster to walls","unit":"m²","formula":"Area = Length × Height"},
+                {"section":"Roofing","code":"K1","description":"Roof covering","unit":"m²","formula":"Area = Plan area × slope factor"}
+            ];
+            
+            appState.smm7Items = smm7Data;
+        }
+
+        // View Management
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('hidden');
+            });
+            
+            // Show selected view
+            document.getElementById(viewName + '-view').classList.remove('hidden');
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load view-specific data
+            if (viewName === 'projects') {
+                loadProjectsView();
+            } else if (viewName === 'library') {
+                loadLibraryView();
+            } else if (viewName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            const activeProject = appState.projects.find(p => p.id === appState.activeProjectId);
+            document.getElementById('active-project-name').textContent = activeProject ? activeProject.name : 'No active project';
+            document.getElementById('total-projects').textContent = appState.projects.length;
+        }
+
+        // Projects View
+        function loadProjectsView() {
+            const projectsList = document.getElementById('projects-list');
+            document.getElementById('project-count').textContent = `${appState.projects.length} Projects`;
+            
+            if (appState.projects.length === 0) {
+                projectsList.innerHTML = '<p>No projects created yet. Click "New Project" to get started.</p>';
+                return;
+            }
+            
+            let html = '<table class="table"><thead><tr><th>Project Name</th><th>Client</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+            
+            appState.projects.forEach(project => {
+                const isActive = project.id === appState.activeProjectId;
+                html += `
+                    <tr>
+                        <td>${project.name}</td>
+                        <td>${project.client || '-'}</td>
+                        <td>${project.location || '-'}</td>
+                        <td><span class="badge ${isActive ? 'success' : ''}">${isActive ? 'Active' : 'Inactive'}</span></td>
+                        <td>
+                            <button class="btn ${isActive ? 'btn-secondary' : 'btn-success'}" onclick="setActiveProject('${project.id}')" ${isActive ? 'disabled' : ''}>
+                                ${isActive ? 'Active' : 'Set Active'}
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteProject('${project.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            projectsList.innerHTML = html;
+        }
+
+        // Library View
+        function loadLibraryView() {
+            const libraryContent = document.getElementById('library-content');
+            const searchTerm = document.getElementById('library-search').value.toLowerCase();
+            
+            const filteredItems = appState.smm7Items.filter(item => 
+                item.section.toLowerCase().includes(searchTerm) ||
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm)
+            );
+            
+            let html = `<table class="table"><thead><tr><th>Section</th><th>Code</th><th>Description</th><th>Unit</th><th>Formula</th></tr></thead><tbody>`;
+            
+            filteredItems.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.section}</td>
+                        <td>${item.code}</td>
+                        <td>${item.description}</td>
+                        <td>${item.unit}</td>
+                        <td>${item.formula}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            libraryContent.innerHTML = html;
+        }
+
+        // Project Modal
+        function openProjectModal() {
+            document.getElementById('project-modal').classList.add('active');
+            document.getElementById('project-form').reset();
+        }
+
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.remove('active');
+        }
+
+        function saveProject(event) {
+            event.preventDefault();
+            
+            const project = {
+                id: 'project_' + Date.now(),
+                name: document.getElementById('project-name').value.trim(),
+                client: document.getElementById('project-client').value.trim(),
+                location: document.getElementById('project-location').value.trim(),
+                buildingType: document.getElementById('project-type').value.trim(),
+                floors: parseInt(document.getElementById('project-floors').value) || 0,
+                durationMonths: parseInt(document.getElementById('project-duration').value) || 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!project.name) {
+                alert('Project name is required');
+                return;
+            }
+            
+            appState.projects.unshift(project);
+            appState.activeProjectId = project.id;
+            saveState();
+            closeProjectModal();
+            loadProjectsView();
+            updateDashboard();
+            
+            alert('Project created successfully!');
+        }
+
+        function setActiveProject(projectId) {
+            appState.activeProjectId = projectId;
+            saveState();
+            loadProjectsView();
+            updateDashboard();
+        }
+
+        function deleteProject(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                appState.projects = appState.projects.filter(p => p.id !== projectId);
+                if (appState.activeProjectId === projectId) {
+                    appState.activeProjectId = null;
+                }
+                saveState();
+                loadProjectsView();
+                updateDashboard();
+            }
+        }
+
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('library-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', loadLibraryView);
+            }
+        });
+
+        // Initialize app on load
+        initApp();
+    </script>
+</body>
+</html>
