@@ -1,8 +1,5 @@
 import { ui } from '../ui.js';
 import { store } from '../storage.js';
-import { Validation } from '../utils/validation.js';
-import { ErrorHandler } from '../utils/error-handler.js';
-import { APP_CONSTANTS } from '../utils/constants.js';
 
 function projectRow(p, isActive){
   const setActiveBtn = ui.el('button', { class:'btn btn--secondary', type:'button', text: isActive ? 'Active' : 'Set Active' });
@@ -26,9 +23,10 @@ function projectRow(p, isActive){
         return s;
       });
       
-      ErrorHandler.showUserMessage(APP_CONSTANTS.SUCCESS_MESSAGES.PROJECT_DELETED, 'success');
+      alert('Project deleted successfully');
     } catch (error) {
-      ErrorHandler.handleFormError(error, { name: p.name }, 'delete project');
+      console.error('Delete error:', error);
+      alert('Failed to delete project');
     }
   });
 
@@ -61,7 +59,8 @@ export async function projectsView(){
         try {
           ui.openProjectCreateModal();
         } catch (error) {
-          ErrorHandler.handleFormError(error, null, 'open project creation modal');
+          console.error('Error opening modal:', error);
+          alert('Failed to open project creation modal');
         }
       }
     })

@@ -2,7 +2,6 @@ import { createRouter } from './router.js';
 import { store } from './storage.js';
 import { ui } from './ui.js';
 import { registerRoutes } from './routes.js';
-import { ErrorHandler } from './utils/error-handler.js';
 
 function ensureDefaultState(){
   try {
@@ -24,7 +23,7 @@ function ensureDefaultState(){
       });
     }
   } catch (error) {
-    ErrorHandler.handleStorageError(error, 'initialize default state', {});
+    console.error('Failed to initialize default state:', error);
   }
 }
 
@@ -41,7 +40,8 @@ function wireGlobalEvents(){
       try {
         ui.openProjectCreateModal();
       } catch (error) {
-        ErrorHandler.handleFormError(error, null, 'open project creation modal');
+        console.error('Error opening project creation modal:', error);
+        alert('Failed to open project creation modal');
       }
     });
 
@@ -49,9 +49,10 @@ function wireGlobalEvents(){
       try {
         const json = store.exportBackup();
         ui.downloadText('smart-smm7-backup.json', json);
-        ErrorHandler.showUserMessage('Backup exported successfully', 'success');
+        alert('Backup exported successfully');
       } catch (error) {
-        ErrorHandler.handleFormError(error, null, 'export backup');
+        console.error('Error exporting backup:', error);
+        alert('Failed to export backup');
       }
     });
 
@@ -63,27 +64,50 @@ function wireGlobalEvents(){
         store.importBackup(text);
         renderActiveProject();
         window.location.reload();
-        ErrorHandler.showUserMessage('Backup imported successfully', 'success');
+        alert('Backup imported successfully');
       } catch (error) {
-        ErrorHandler.handleFormError(error, null, 'import backup');
+        console.error('Error importing backup:', error);
+        alert('Failed to import backup');
       }
     });
 
     store.subscribe(renderActiveProject);
   } catch (error) {
-    ErrorHandler.log(error, 'wire global events');
+    console.error('Error wiring global events:', error);
   }
 }
 
-ensureDefaultState();
-ErrorHandler.init();
-wireGlobalEvents();
-renderActiveProject();
+// Wait for DOM to be ready before initializing
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Ready - Initializing Application...');
+  
+  try {
+    ensureDefaultState();
+    wireGlobalEvents();
+    renderActiveProject();
 
-const router = createRouter({
-  viewEl: document.getElementById('view'),
-  setActiveNav: ui.setActiveNav
+    const router = createRouter({
+      viewEl: document.getElementById('view'),
+      setActiveNav: ui.setActiveNav
+    });
+
+    registerRoutes(router);
+    router.start();
+    
+    console.log('Application initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize application:', error);
+    // Fallback initialization
+    ensureDefaultState();
+    wireGlobalEvents();
+    renderActiveProject();
+    
+    const router = createRouter({
+      viewEl: document.getElementById('view'),
+      setActiveNav: ui.setActiveNav
+    });
+
+    registerRoutes(router);
+    router.start();
+  }
 });
-
-registerRoutes(router);
-router.start();

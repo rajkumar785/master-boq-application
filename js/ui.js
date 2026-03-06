@@ -1,7 +1,4 @@
 import { store } from './storage.js';
-import { Validation } from './utils/validation.js';
-import { ErrorHandler } from './utils/error-handler.js';
-import { APP_CONSTANTS } from './utils/constants.js';
 
 function qs(sel, root=document){
   return root.querySelector(sel);
@@ -110,79 +107,21 @@ function openProjectCreateModal(){
   
   const formId = store.uid('projectForm');
   const form = el('form', { id: formId, class:'grid', style:'gap:12px' });
-  
-  // Create validation container
-  const validationContainer = el('div', { class:'validation-container' });
 
   const fields = [
-    { 
-      key:'name', 
-      label:'Project Name', 
-      type:'text', 
-      required:true,
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.PROJECT_NAME,
-        label: 'Project Name'
-      }
-    },
-    { 
-      key:'client', 
-      label:'Client', 
-      type:'text',
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.CLIENT_NAME,
-        label: 'Client Name'
-      }
-    },
-    { 
-      key:'location', 
-      label:'Location', 
-      type:'text',
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.LOCATION,
-        label: 'Location'
-      }
-    },
-    { 
-      key:'buildingType', 
-      label:'Building Type', 
-      type:'text',
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.BUILDING_TYPE,
-        label: 'Building Type'
-      }
-    },
-    { 
-      key:'floors', 
-      label:'Number of Floors', 
-      type:'number',
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.FLOORS,
-        label: 'Number of Floors'
-      }
-    },
-    { 
-      key:'durationMonths', 
-      label:'Project Duration (months)', 
-      type:'number',
-      validation: {
-        ...APP_CONSTANTS.VALIDATION.DURATION_MONTHS,
-        label: 'Project Duration'
-      }
-    }
+    { key:'name', label:'Project Name', type:'text', required:true },
+    { key:'client', label:'Client', type:'text' },
+    { key:'location', label:'Location', type:'text' },
+    { key:'buildingType', label:'Building Type', type:'text' },
+    { key:'floors', label:'Number of Floors', type:'number' },
+    { key:'durationMonths', label:'Project Duration (months)', type:'number' }
   ];
 
   const inputs = {};
   fields.forEach(f => {
     const wrap = el('div', { class:'field' });
     wrap.appendChild(el('label', { text:f.label }));
-    const input = el('input', { 
-      type:f.type, 
-      name:f.key, 
-      value:'',
-      ...(f.required ? { required:'true' } : {}),
-      placeholder: f.validation ? `Enter ${f.label.toLowerCase()}` : ''
-    });
+    const input = el('input', { type:f.type, name:f.key, value:'', ...(f.required ? { required:'true' } : {}) });
     inputs[f.key] = input;
     wrap.appendChild(input);
     form.appendChild(wrap);
@@ -195,37 +134,18 @@ function openProjectCreateModal(){
     createBtn
   ]);
 
-  const modal = openModal({ 
-    title:'New Project', 
-    bodyNode: form, 
-    footerNode: footer 
-  });
+  const modal = openModal({ title:'New Project', bodyNode: form, footerNode: footer });
 
   function createProject(e){
     if(e) e.preventDefault();
     
     try {
-      // Clear previous validation errors
-      Validation.clearErrors(validationContainer);
-      
-      // Validate all fields
-      const validationResult = Validation.form(form, fields.reduce((rules, field) => {
-        rules[field.key] = field.validation;
-        return rules;
-      }, {}));
-
-      if (!validationResult.isValid) {
-        Validation.showErrors(validationResult, validationContainer);
-        return;
-      }
-
-      // Sanitize inputs
       const project = {
         id: store.uid('project'),
-        name: Validation.sanitize(inputs.name.value.trim()),
-        client: Validation.sanitize(inputs.client.value.trim()),
-        location: Validation.sanitize(inputs.location.value.trim()),
-        buildingType: Validation.sanitize(inputs.buildingType.value.trim()),
+        name: inputs.name.value.trim(),
+        client: inputs.client.value.trim(),
+        location: inputs.location.value.trim(),
+        buildingType: inputs.buildingType.value.trim(),
         floors: Number(inputs.floors.value || 0),
         durationMonths: Number(inputs.durationMonths.value || 0),
         createdAt: new Date().toISOString()
@@ -233,10 +153,9 @@ function openProjectCreateModal(){
 
       console.log('Project data:', project);
 
-      // Additional validation
-      const nameValidation = Validation.projectName(project.name);
-      if (!nameValidation.isValid) {
-        Validation.showErrors({ isValid: false, errors: { name: nameValidation.message } }, validationContainer);
+      if(!project.name){
+        alert('Please enter a project name');
+        inputs.name.focus();
         return;
       }
 
@@ -258,16 +177,15 @@ function openProjectCreateModal(){
       }
 
       console.log('Project created successfully!');
-      ErrorHandler.showUserMessage(APP_CONSTANTS.SUCCESS_MESSAGES.PROJECT_CREATED, 'success');
+      alert('Project created successfully!');
       
       modal.close();
       window.location.hash = '#/projects';
-      // If already on #/projects, hashchange won't fire; force a re-render.
       window.dispatchEvent(new Event('hashchange'));
       
     } catch (error) {
       console.error('Project creation error:', error);
-      ErrorHandler.handleFormError(error, form, 'create project');
+      alert('Failed to create project: ' + error.message);
     }
   }
 

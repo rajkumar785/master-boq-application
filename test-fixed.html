@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Application Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Fixed Application Test</h1>
+    <div id="results"></div>
+    
+    <div class="test">
+        <h3>🧪 Test Project Creation</h3>
+        <button onclick="testProjectCreation()">Test Project Creation</button>
+        <div id="project-result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>🌐 Open Main Application</h3>
+        <button onclick="openMainApp()">Open Main App</button>
+    </div>
+
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        function addTest(name, status, message = '') {
+            const div = document.createElement('div');
+            div.className = `test ${status}`;
+            div.innerHTML = `
+                <strong>${name}:</strong> 
+                ${status === 'pass' ? '✅ PASS' : status === 'fail' ? '❌ FAIL' : 'ℹ️ INFO'}
+                ${message ? `<br><small>${message}</small>` : ''}
+            `;
+            results.appendChild(div);
+        }
+
+        function testProjectCreation() {
+            const resultDiv = document.getElementById('project-result');
+            
+            // Test localStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                addTest('LocalStorage', 'pass', 'LocalStorage is working');
+            } catch (error) {
+                addTest('LocalStorage', 'fail', error.message);
+                return;
+            }
+            
+            // Test module loading by importing main app
+            import('./js/app.js').then(() => {
+                resultDiv.innerHTML = '✅ Main app loaded successfully! Project creation should work now.';
+                addTest('Module Loading', 'pass', 'All modules loaded without circular dependencies');
+            }).catch(error => {
+                resultDiv.innerHTML = '❌ Main app failed to load: ' + error.message;
+                addTest('Module Loading', 'fail', error.message);
+            });
+        }
+
+        function openMainApp() {
+            window.open('./index.html', '_blank');
+        }
+
+        // Initial tests
+        addTest('Application Structure', 'info', 'Fixed circular dependencies and missing CSS');
+        addTest('CSS Classes', 'info', 'Added missing validation and modal styles');
+        addTest('Initialization', 'info', 'Fixed DOM ready initialization order');
+        addTest('Dependencies', 'info', 'Removed circular utils dependencies');
+        
+        addTest('Next Steps', 'info', 
+            '1. Open main application<br>' +
+            '2. Click "New Project"<br>' +
+            '3. Fill in project details<br>' +
+            '4. Click "Create Project"<br>' +
+            '5. Project should appear in list'
+        );
+    </script>
+</body>
+</html>

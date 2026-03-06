@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Module Import Test</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        function addTest(name, passed, error = '') {
+            const div = document.createElement('div');
+            div.className = `test ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${name}:</strong> 
+                ${passed ? '✅ PASS' : '❌ FAIL'}
+                ${error ? `<br><small>${error}</small>` : ''}
+            `;
+            results.appendChild(div);
+        }
+
+        // Test 1: Storage Module
+        try {
+            import('./js/storage.js').then(module => {
+                addTest('Storage Module', !!module.store);
+            }).catch(error => {
+                addTest('Storage Module', false, error.message);
+            });
+        } catch (error) {
+            addTest('Storage Module', false, error.message);
+        }
+
+        // Test 2: Utils Modules
+        const utilsModules = [
+            { name: 'Validation', path: './js/utils/validation.js' },
+            { name: 'ErrorHandler', path: './js/utils/error-handler.js' },
+            { name: 'Constants', path: './js/utils/constants.js' },
+            { name: 'Calculations', path: './js/utils/calculations.js' }
+        ];
+
+        utilsModules.forEach(({ name, path }) => {
+            try {
+                import(path).then(module => {
+                    const hasExport = module[name] || module[Object.keys(module)[0]];
+                    addTest(`${name} Module`, !!hasExport);
+                }).catch(error => {
+                    addTest(`${name} Module`, false, error.message);
+                });
+            } catch (error) {
+                addTest(`${name} Module`, false, error.message);
+            }
+        });
+
+        // Test 3: UI Module
+        try {
+            import('./js/ui.js').then(module => {
+                addTest('UI Module', !!module.ui);
+            }).catch(error => {
+                addTest('UI Module', false, error.message);
+            });
+        } catch (error) {
+            addTest('UI Module', false, error.message);
+        }
+
+        // Test 4: Views Module
+        try {
+            import('./js/views/projects.js').then(module => {
+                addTest('Projects View', !!module.projectsView);
+            }).catch(error => {
+                addTest('Projects View', false, error.message);
+            });
+        } catch (error) {
+            addTest('Projects View', false, error.message);
+        }
+
+        // Test 5: Check for syntax errors
+        setTimeout(() => {
+            const tests = results.querySelectorAll('.test');
+            const failed = Array.from(tests).filter(test => test.classList.contains('fail'));
+            
+            if (failed.length === 0) {
+                addTest('Overall Module Loading', true, 'All modules loaded successfully');
+            } else {
+                addTest('Overall Module Loading', false, `${failed.length} modules failed to load`);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
