@@ -1,5 +1,8 @@
 import { ui } from '../ui.js';
 import { store } from '../storage.js';
+import { Validation } from '../utils/validation.js';
+import { ErrorHandler } from '../utils/error-handler.js';
+import { APP_CONSTANTS } from '../utils/constants.js';
 
 function projectRow(p, isActive){
   const setActiveBtn = ui.el('button', { class:'btn btn--secondary', type:'button', text: isActive ? 'Active' : 'Set Active' });
@@ -15,11 +18,18 @@ function projectRow(p, isActive){
   delBtn.addEventListener('click', () => {
     const ok = confirm(`Delete project "${p.name}"? This will remove stored data linked to it.`);
     if(!ok) return;
-    store.update(s => {
-      s.projects = (s.projects || []).filter(x => x.id !== p.id);
-      if(s.activeProjectId === p.id) s.activeProjectId = s.projects[0]?.id || null;
-      return s;
-    });
+    
+    try {
+      store.update(s => {
+        s.projects = (s.projects || []).filter(x => x.id !== p.id);
+        if(s.activeProjectId === p.id) s.activeProjectId = s.projects[0]?.id || null;
+        return s;
+      });
+      
+      ErrorHandler.showUserMessage(APP_CONSTANTS.SUCCESS_MESSAGES.PROJECT_DELETED, 'success');
+    } catch (error) {
+      ErrorHandler.handleFormError(error, { name: p.name }, 'delete project');
+    }
   });
 
   return ui.el('tr', {}, [
@@ -43,7 +53,18 @@ export async function projectsView(){
 
   const body = ui.el('div', { class:'card__body' });
   const actions = ui.el('div', { class:'row' }, [
-    ui.el('button', { class:'btn', type:'button', text:'New Project', onclick: () => ui.openProjectCreateModal() })
+    ui.el('button', { 
+      class:'btn', 
+      type:'button', 
+      text:'New Project', 
+      onclick: () => {
+        try {
+          ui.openProjectCreateModal();
+        } catch (error) {
+          ErrorHandler.handleFormError(error, null, 'open project creation modal');
+        }
+      }
+    })
   ]);
   body.appendChild(actions);
   body.appendChild(ui.el('div', { style:'height:12px' }));

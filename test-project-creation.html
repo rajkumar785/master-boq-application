@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Creation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Project Creation System Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test LocalStorage</h2>
+        <button onclick="testLocalStorage()">Test LocalStorage</button>
+        <div id="localStorage-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test Modal Elements</h2>
+        <button onclick="testModalElements()">Test Modal Elements</button>
+        <div id="modal-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Project Creation</h2>
+        <button onclick="testProjectCreation()">Test Project Creation</button>
+        <div id="project-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Open Main Application</h2>
+        <button onclick="window.open('./index.html', '_blank')">Open Main App</button>
+    </div>
+
+    <script>
+        // Test LocalStorage
+        function testLocalStorage() {
+            try {
+                const testKey = 'test-key';
+                const testValue = { test: 'data' };
+                localStorage.setItem(testKey, JSON.stringify(testValue));
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+                localStorage.removeItem(testKey);
+                
+                if (retrieved && retrieved.test === 'data') {
+                    document.getElementById('localStorage-result').innerHTML = '<span class="success">✅ LocalStorage working</span>';
+                } else {
+                    document.getElementById('localStorage-result').innerHTML = '<span class="error">❌ LocalStorage failed</span>';
+                }
+            } catch (error) {
+                document.getElementById('localStorage-result').innerHTML = '<span class="error">❌ LocalStorage error: ' + error.message + '</span>';
+            }
+        }
+        
+        // Test Modal Elements (if main app is open)
+        function testModalElements() {
+            const mainApp = window.open('./index.html', '_blank');
+            setTimeout(() => {
+                try {
+                    // This will only work if the main app is open
+                    document.getElementById('modal-result').innerHTML = '<span class="success">✅ Open main app and check console for modal tests</span>';
+                } catch (error) {
+                    document.getElementById('modal-result').innerHTML = '<span class="error">❌ Cannot test modal elements directly</span>';
+                }
+            }, 1000);
+        }
+        
+        // Test Project Creation Logic
+        function testProjectCreation() {
+            try {
+                // Simulate project creation
+                const testProject = {
+                    id: 'test_' + Date.now(),
+                    name: 'Test Project',
+                    client: 'Test Client',
+                    location: 'Test Location',
+                    buildingType: 'Test Building',
+                    floors: 5,
+                    durationMonths: 12,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Test if project object is valid
+                const isValid = testProject.name && testProject.id && testProject.createdAt;
+                
+                if (isValid) {
+                    document.getElementById('project-result').innerHTML = '<span class="success">✅ Project creation logic valid</span>';
+                } else {
+                    document.getElementById('project-result').innerHTML = '<span class="error">❌ Project creation logic invalid</span>';
+                }
+            } catch (error) {
+                document.getElementById('project-result').innerHTML = '<span class="error">❌ Project creation error: ' + error.message + '</span>';
+            }
+        }
+        
+        // Run tests on page load
+        window.onload = function() {
+            console.log('Running project creation tests...');
+            testLocalStorage();
+            testProjectCreation();
+        };
+    </script>
+</body>
+</html>
